@@ -24,7 +24,6 @@ class Main:
     '''
 
 
-
 def frequency_count(filename: str) -> list:
     """Returns a list of two lists which are the list of characters and their
     corresponding frequencies in filename, sorted by their frequencies.
@@ -43,7 +42,10 @@ def frequency_count(filename: str) -> list:
     sorted_pair_list = sorted(char_dict.items(), key=lambda pair: pair[1])
     freq_list = []
     char_list = []
+
     for item in sorted_pair_list:
         freq_list.append(item[1])
         char_list.append(item[0])
     return [char_list, freq_list]
+
+print("e")
