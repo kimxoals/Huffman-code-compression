@@ -44,3 +44,26 @@ class Main:
         n1.parent = n2
         n2.left = l_t
         n2.right = n1
+
+def frequency_count(filename: str) -> list:
+    """Returns a list of two lists which are the list of characters and their
+    corresponding frequencies in filename, sorted by their frequencies.
+    """
+    file = open(filename, "r")
+    text = file.read()
+    char_dict = {}
+    if text == '':
+        return [[],[]]
+    for index in range(len(text)):
+        if text[index] not in char_dict:
+            char_dict[text[index]] = 1
+        else:
+            char_dict[text[index]] += 1
+
+    sorted_pair_list = sorted(char_dict.items(), key=lambda pair: pair[1])
+    freq_list = []
+    char_list = []
+    for item in sorted_pair_list:
+        freq_list.append(item[1])
+        char_list.append(item[0])
+    return [char_list, freq_list]
