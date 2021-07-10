@@ -49,20 +49,35 @@ def frequency_count(filename: str) -> list:
     return [char_list, freq_list]
 
 
-def compress(filename: str, prefix_dict: dict, bitlength: int) -> None:
+def str_to_byte(bit_str: str) -> bytes:
+    byte_array = bytearray()
+    for index in range(0, len(bit_str), 8):
+        byte_array.append(int(bit_str[index : index + 8], 2))
+    return bytes(byte_array)
+
+
+def compress(filename: str, prefix_dict: dict) -> None:
     file = open(filename, "r")
     compressed_string = ""
     text = file.read()
-    compressed_file = open("compressed.txt", "w")
+    compressed_file = open("compressed.txt", "wb")
+
     for index in range(len(text)):
-        compressed_file.write(prefix_dict[text[index]])
+        compressed_string += prefix_dict[text[index]]
+
+    compressed_file.write(str_to_byte(compressed_string))
+
     file.close()
     compressed_file.close()
 
 
+def decompress(compressed_file: str) -> str:
+    pass
+
+
 if __name__ == "__main__":
     pass
-    # new_dict = {'h' : "000", 'e' : "0015555555", 'l' : "010", 'o': "100"}
+    # new_dict = {'h' : "000", 'e' : "001", 'l' : "010", 'o': "100"}
     # print(frequency_count("trial.txt"))
     # compress("trial.txt", new_dict, 3)
 
