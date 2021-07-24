@@ -16,24 +16,24 @@ If next least frequent char <= sum, node.left = char
 Else build new tree and merge to main tree.
 """
 
-chars = ['e', 'a', 'd', 'b', 'c']
-freq = [2, 3, 4, 5, 6]
+chars = ['e', 'a', 'd', 'b', 'c', '\n']
+freq = [2, 3, 4, 5, 6, 10]
+global dict
+dict = {}
 
 
 def printNodes(node, val=''):
     newVal = val + str(node.huff)
-
     if (node.left):
         printNodes(node.left, newVal)
     if (node.right):
         printNodes(node.right, newVal)
     if (not node.left and not node.right):
-        print(f"{node.char} -> {newVal}")
+        dict[node.char] = newVal
+        # print(repr(f"{node.char} -> {newVal}"))
 
 
 def huffmanEncoding(chars, freq):
-    dict = {}
-
     nodes = []
     # initialize array of leaves
     for i in range(len(chars)):
@@ -63,6 +63,7 @@ def huffmanEncoding(chars, freq):
 
         # print([(node.char, node.freq) for node in nodes])
     printNodes(nodes[0])
+    print(dict)
 
 
 huffmanEncoding(chars, freq)
