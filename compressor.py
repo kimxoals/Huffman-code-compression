@@ -1,27 +1,71 @@
-class Node:
-    def __init__(self, freq=None, parent=None, char=None):
+class node:
+    def __init__(self, freq, char=None, left=None, right=None):
         self.freq = freq
         self.char = char
-        self.parent = parent
-        self.left = None
-        self.right = None
+        self.left = left
+        self.right = right
+        self.huff = ''
 
-class Main:
-    """
-    Array alpha stores characters in descending frequency
-    Array freq stores frequency of alpha in order
 
-    First take two characters of lowest frequency. Add two frequencies
-    If next least frequent char <= sum, node.left = char
-    Else build new tree and merge to main tree.
-    """
-    '''
-    node_list = [get all node.val and find two smallest]
+"""
+Array alpha stores characters in descending frequency
+Array freq stores frequency of alpha in order
 
-    Iterate through node_listL:
-        find two nodes with smallest frequency
-        combine and replace old two node with 1 new node
-    '''
+First take two characters of lowest frequency. Add two frequencies
+If next least frequent char <= sum, node.left = char
+Else build new tree and merge to main tree.
+"""
+
+chars = ['e', 'a', 'd', 'b', 'c']
+freq = [2, 3, 4, 5, 6]
+
+
+def printNodes(node, val=''):
+    newVal = val + str(node.huff)
+
+    if (node.left):
+        printNodes(node.left, newVal)
+    if (node.right):
+        printNodes(node.right, newVal)
+    if (not node.left and not node.right):
+        print(f"{node.char} -> {newVal}")
+
+
+def huffmanEncoding(chars, freq):
+    dict = {}
+
+    nodes = []
+    # initialize array of leaves
+    for i in range(len(chars)):
+        n = node(freq[i], chars[i])
+        nodes.append(n)
+
+    while len(nodes) > 1:
+        # Min heapify Nodes
+        nodes = sorted(nodes, key=lambda x: x.freq)
+
+        left = nodes[0]
+        right = nodes[1]
+
+        left.huff = 0
+        right.huff = 1
+
+        # make new intermediate node
+        newNode = node(left.freq + right.freq, left.char + right.char, left,
+                       right)
+
+        # remove two smallest nodes
+        nodes.remove(left)
+        nodes.remove(right)
+
+        # Add newNode
+        nodes.append(newNode)
+
+        # print([(node.char, node.freq) for node in nodes])
+    printNodes(nodes[0])
+
+
+huffmanEncoding(chars, freq)
 
 
 def frequency_count(filename: str) -> list:
@@ -32,7 +76,7 @@ def frequency_count(filename: str) -> list:
     text = file.read()
     char_dict = {}
     if text == '':
-        return [[],[]]
+        return [[], []]
     for index in range(len(text)):
         if text[index] not in char_dict:
             char_dict[text[index]] = 1
