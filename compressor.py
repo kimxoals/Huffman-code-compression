@@ -5,7 +5,7 @@ class node:
         self.left = left
         self.right = right
         self.huff = ''
-
+global dict
 
 """
 Array alpha stores characters in descending frequency
@@ -16,10 +16,7 @@ If next least frequent char <= sum, node.left = char
 Else build new tree and merge to main tree.
 """
 
-chars = ['e', 'a', 'd', 'b', 'c', '\n']
-freq = [2, 3, 4, 5, 6, 10]
-global dict
-dict = {}
+
 
 
 def printNodes(node, val=''):
@@ -64,9 +61,6 @@ def huffmanEncoding(chars, freq):
         # print([(node.char, node.freq) for node in nodes])
     printNodes(nodes[0])
     print(dict)
-
-
-huffmanEncoding(chars, freq)
 
 
 def frequency_count(filename: str) -> list:
@@ -121,8 +115,12 @@ def decompress(compressed_file: str) -> str:
 
 
 if __name__ == "__main__":
-    pass
+    chars = ['e', 'a', 'd', 'b', 'c', '\n']
+    freq = [2, 3, 4, 5, 6, 10]
+
+    dict = {}
+
+    huffmanEncoding(chars, freq)
     # new_dict = {'h' : "000", 'e' : "001", 'l' : "010", 'o': "100"}
     # print(frequency_count("trial.txt"))
     # compress("trial.txt", new_dict, 3)
-
