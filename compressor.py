@@ -1,3 +1,6 @@
+import pprint
+
+
 class Node:
     def __init__(self, freq, char=None, left=None, right=None):
         self.freq = freq
@@ -62,7 +65,7 @@ def huffman_encoding(chars, freq) -> dict:
         # print([(node.char, node.freq) for node in nodes])
     char_dict = {}
     printNodes(nodes[0], char_dict=char_dict)
-    print(char_dict)
+    pprint.pprint(char_dict)
     return char_dict
 
 
@@ -129,4 +132,4 @@ if __name__ == "__main__":
     # compress(dict)
     # new_dict = {'h' : "000", 'e' : "001", 'l' : "010", 'o': "100"}
     # print(frequency_count("trial.txt"))
-    compress("trial.txt")
+    compress("lorem.txt")
