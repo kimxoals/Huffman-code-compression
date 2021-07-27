@@ -1,11 +1,13 @@
-class node:
+class Node:
     def __init__(self, freq, char=None, left=None, right=None):
         self.freq = freq
         self.char = char
         self.left = left
         self.right = right
         self.huff = ''
-global dict
+
+
+# global dict
 
 """
 Array alpha stores characters in descending frequency
@@ -17,24 +19,22 @@ Else build new tree and merge to main tree.
 """
 
 
-
-
-def printNodes(node, val=''):
+def printNodes(node, val='', char_dict={}):
     newVal = val + str(node.huff)
     if (node.left):
-        printNodes(node.left, newVal)
+        printNodes(node.left, newVal, char_dict)
     if (node.right):
-        printNodes(node.right, newVal)
+        printNodes(node.right, newVal, char_dict)
     if (not node.left and not node.right):
-        dict[node.char] = newVal
+        char_dict[node.char] = newVal
         # print(repr(f"{node.char} -> {newVal}"))
 
 
-def huffmanEncoding(chars, freq):
+def huffman_encoding(chars, freq) -> dict:
     nodes = []
     # initialize array of leaves
     for i in range(len(chars)):
-        n = node(freq[i], chars[i])
+        n = Node(freq[i], chars[i])
         nodes.append(n)
 
     while len(nodes) > 1:
@@ -48,7 +48,7 @@ def huffmanEncoding(chars, freq):
         right.huff = 1
 
         # make new intermediate node
-        newNode = node(left.freq + right.freq, left.char + right.char, left,
+        newNode = Node(left.freq + right.freq, left.char + right.char, left,
                        right)
 
         # remove two smallest nodes
@@ -59,8 +59,10 @@ def huffmanEncoding(chars, freq):
         nodes.append(newNode)
 
         # print([(node.char, node.freq) for node in nodes])
-    printNodes(nodes[0])
-    print(dict)
+    char_dict = {}
+    printNodes(nodes[0], char_dict=char_dict)
+    print(char_dict)
+    return char_dict
 
 
 def frequency_count(filename: str) -> list:
@@ -95,11 +97,13 @@ def str_to_byte(bit_str: str) -> bytes:
     return bytes(byte_array)
 
 
-def compress(filename: str, prefix_dict: dict) -> None:
+def compress(filename: str) -> None:
     file = open(filename, "r")
     compressed_string = ""
     text = file.read()
     compressed_file = open("compressed.txt", "wb")
+    char_freq = frequency_count(filename)
+    prefix_dict = huffman_encoding(char_freq[0], char_freq[1])
 
     for index in range(len(text)):
         compressed_string += prefix_dict[text[index]]
@@ -118,9 +122,11 @@ if __name__ == "__main__":
     chars = ['e', 'a', 'd', 'b', 'c', '\n']
     freq = [2, 3, 4, 5, 6, 10]
 
-    dict = {}
+    # lookup_dict = huffman_encoding(chars, freq)
 
-    huffmanEncoding(chars, freq)
+
+    # print(lookup_dict)
+    # compress(dict)
     # new_dict = {'h' : "000", 'e' : "001", 'l' : "010", 'o': "100"}
     # print(frequency_count("trial.txt"))
-    # compress("trial.txt", new_dict, 3)
+    compress("trial.txt")
