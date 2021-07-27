@@ -7,7 +7,6 @@ class Node:
         self.huff = ''
 
 
-# global dict
 
 """
 Array alpha stores characters in descending frequency
@@ -19,13 +18,15 @@ Else build new tree and merge to main tree.
 """
 
 
-def printNodes(node, val='', char_dict={}):
+def printNodes(node, val='', char_dict=None):
+    if char_dict is None:
+        char_dict = {}
     newVal = val + str(node.huff)
-    if (node.left):
+    if node.left:
         printNodes(node.left, newVal, char_dict)
-    if (node.right):
+    if node.right:
         printNodes(node.right, newVal, char_dict)
-    if (not node.left and not node.right):
+    if not node.left and not node.right:
         char_dict[node.char] = newVal
         # print(repr(f"{node.char} -> {newVal}"))
 
@@ -109,7 +110,6 @@ def compress(filename: str) -> None:
         compressed_string += prefix_dict[text[index]]
 
     compressed_file.write(str_to_byte(compressed_string))
-
     file.close()
     compressed_file.close()
 
