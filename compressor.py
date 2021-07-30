@@ -98,10 +98,11 @@ def str_to_byte(bit_str: str) -> bytes:
     byte_array = bytearray()
     for index in range(0, len(bit_str), 8):
         byte_array.append(int(bit_str[index : index + 8], 2))
+        # print(int(bit_str[index : index + 8], 2))
     return bytes(byte_array)
 
 
-def compress(filename: str) -> None:
+def compress(filename: str) -> dict:
     file = open(filename, "r")
     compressed_string = ""
     text = file.read()
@@ -115,10 +116,35 @@ def compress(filename: str) -> None:
     compressed_file.write(str_to_byte(compressed_string))
     file.close()
     compressed_file.close()
+    return prefix_dict
+# 10101010 00000000 11001010 10101010
 
 
-def decompress(compressed_file: str) -> str:
-    pass
+def decompress(compressed_file: str, prefix: dict) -> str:
+    file = open(compressed_file, "rb")
+    decompressed_file = open("decompressed.txt", "w")
+    compressed_text = file.read()
+    compressed_str = ''
+    for integer in compressed_text:
+        compressed_str += format(integer, '08b')
+    print()
+    inv_prefix = {v: k for k, v in prefix.items()}
+    print(inv_prefix)
+    temp = ''
+    text = ''
+    for i in compressed_str:
+        if temp not in inv_prefix:
+            temp += i
+        else:
+            text += inv_prefix[temp]
+            temp = i
+
+    decompressed_file.write(text)
+    decompressed_file.close()
+    file.close()
+
+    return "success"
+    # return "compressed_str"
 
 
 if __name__ == "__main__":
@@ -132,4 +158,6 @@ if __name__ == "__main__":
     # compress(dict)
     # new_dict = {'h' : "000", 'e' : "001", 'l' : "010", 'o': "100"}
     # print(frequency_count("trial.txt"))
-    compress("lorem.txt")
+    dictio = compress("trial.txt")
+    decompress("compressed.txt", dictio)
+    # print(compress("trial.txt") == decompress("compressed.txt"))
