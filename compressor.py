@@ -65,7 +65,7 @@ def huffman_encoding(chars, freq) -> dict:
         # print([(node.char, node.freq) for node in nodes])
     char_dict = {}
     printNodes(nodes[0], char_dict=char_dict)
-    pprint.pprint(char_dict)
+    # pprint.pprint(char_dict)
     return char_dict
 
 
@@ -97,16 +97,17 @@ def frequency_count(filename: str) -> list:
 def str_to_byte(bit_str: str) -> bytes:
     byte_array = bytearray()
     q, r = divmod(len(bit_str), 8)
-    for index in range(0, q, 8):
+    for index in range(0, q * 8, 8):
         byte_array.append(int(bit_str[index: index + 8], 2))
-    remainder = bit_str[q * 8:]
-    remainder += '0' * (8 - r)
-    byte_array.append(int(remainder, 2))
+    if r != 0:
+        remainder = bit_str[q * 8:]
+        remainder += '0' * (8 - r)
+        byte_array.append(int(remainder, 2))
     print('original bytes: ', bytes(byte_array))
     return bytes(byte_array)
 
 
-def compress(filename: str) -> dict:
+def compress(filename: str) -> list:
     file = open(filename, "r")
     compressed_string = ""
     text = file.read()
@@ -121,10 +122,10 @@ def compress(filename: str) -> dict:
     compressed_file.write(str_to_byte(compressed_string))
     file.close()
     compressed_file.close()
-    return prefix_dict
+    return [len(compressed_string), prefix_dict]
 
 
-def decompress(compressed_file: str, prefix: dict) -> str:
+def decompress(compressed_file: str, len_n_prefix: list) -> str:
     file = open(compressed_file, "rb")
     decompressed_file = open("decompressed.txt", "w")
     compressed_text = file.read()
@@ -134,20 +135,22 @@ def decompress(compressed_file: str, prefix: dict) -> str:
         # print(format(integer, '08b'))
         compressed_str += format(integer, '08b')
 
-    print(compressed_str)
-    inv_prefix = {v: k for k, v in prefix.items()}
+    print('read binary: ', compressed_str)
+    inv_prefix = {v: k for k, v in len_n_prefix[1].items()}
     temp = ''
     text = ''
-    for i in compressed_str:
+    i = 0
+    while i < len_n_prefix[0]:
         if temp not in inv_prefix:
-            temp += i
+            temp += compressed_str[i]
         else:
             text += inv_prefix[temp]
-            temp = i
+            temp = compressed_str[i]
+        i += 1
     decompressed_file.write(text)
     decompressed_file.close()
     file.close()
-
+    print(text)
     return "success"
     # return "compressed_str"
 
