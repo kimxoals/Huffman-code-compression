@@ -103,7 +103,7 @@ def str_to_byte(bit_str: str) -> bytes:
         remainder = bit_str[q * 8:]
         remainder += '0' * (8 - r)
         byte_array.append(int(remainder, 2))
-    print('original bytes: ', bytes(byte_array))
+    # print('original bytes: ', bytes(byte_array))
     return bytes(byte_array)
 
 
@@ -118,7 +118,7 @@ def compress(filename: str) -> list:
     for index in range(len(text)):
         compressed_string += prefix_dict[text[index]]
 
-    print('original binary: ', compressed_string)
+    # print('original binary: ', compressed_string)
     compressed_file.write(str_to_byte(compressed_string))
     file.close()
     compressed_file.close()
@@ -129,13 +129,13 @@ def decompress(compressed_file: str, len_n_prefix: list) -> str:
     file = open(compressed_file, "rb")
     decompressed_file = open("decompressed.txt", "w")
     compressed_text = file.read()
-    print('read bytes: ', compressed_text)
+    # print('read bytes: ', compressed_text)
     compressed_str = ''
     for integer in compressed_text:
         # print(format(integer, '08b'))
         compressed_str += format(integer, '08b')
 
-    print('read binary: ', compressed_str)
+    # print('read binary: ', compressed_str)
     inv_prefix = {v: k for k, v in len_n_prefix[1].items()}
     temp = ''
     text = ''
@@ -143,16 +143,18 @@ def decompress(compressed_file: str, len_n_prefix: list) -> str:
     while i < len_n_prefix[0]:
         if temp not in inv_prefix:
             temp += compressed_str[i]
+            i += 1
         else:
             text += inv_prefix[temp]
-            temp = compressed_str[i]
-        i += 1
+            temp = ''
+    if temp in inv_prefix:
+        text += inv_prefix[temp]
+
     decompressed_file.write(text)
     decompressed_file.close()
     file.close()
-    print(text)
     return "success"
-    # return "compressed_str"
+
 
 
 if __name__ == "__main__":
