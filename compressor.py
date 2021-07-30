@@ -96,9 +96,13 @@ def frequency_count(filename: str) -> list:
 
 def str_to_byte(bit_str: str) -> bytes:
     byte_array = bytearray()
-    for index in range(0, len(bit_str), 8):
-        byte_array.append(int(bit_str[index : index + 8], 2))
-        # print(int(bit_str[index : index + 8], 2))
+    q, r = divmod(len(bit_str), 8)
+    for index in range(0, q, 8):
+        byte_array.append(int(bit_str[index: index + 8], 2))
+    remainder = bit_str[q * 8:]
+    remainder += '0' * (8 - r)
+    byte_array.append(int(remainder, 2))
+    print('original bytes: ', bytes(byte_array))
     return bytes(byte_array)
 
 
@@ -113,23 +117,25 @@ def compress(filename: str) -> dict:
     for index in range(len(text)):
         compressed_string += prefix_dict[text[index]]
 
+    print('original binary: ', compressed_string)
     compressed_file.write(str_to_byte(compressed_string))
     file.close()
     compressed_file.close()
     return prefix_dict
-# 10101010 00000000 11001010 10101010
 
 
 def decompress(compressed_file: str, prefix: dict) -> str:
     file = open(compressed_file, "rb")
     decompressed_file = open("decompressed.txt", "w")
     compressed_text = file.read()
+    print('read bytes: ', compressed_text)
     compressed_str = ''
     for integer in compressed_text:
+        # print(format(integer, '08b'))
         compressed_str += format(integer, '08b')
-    print()
+
+    print(compressed_str)
     inv_prefix = {v: k for k, v in prefix.items()}
-    print(inv_prefix)
     temp = ''
     text = ''
     for i in compressed_str:
@@ -138,7 +144,6 @@ def decompress(compressed_file: str, prefix: dict) -> str:
         else:
             text += inv_prefix[temp]
             temp = i
-
     decompressed_file.write(text)
     decompressed_file.close()
     file.close()
@@ -148,16 +153,7 @@ def decompress(compressed_file: str, prefix: dict) -> str:
 
 
 if __name__ == "__main__":
-    chars = ['e', 'a', 'd', 'b', 'c', '\n']
-    freq = [2, 3, 4, 5, 6, 10]
 
-    # lookup_dict = huffman_encoding(chars, freq)
-
-
-    # print(lookup_dict)
-    # compress(dict)
-    # new_dict = {'h' : "000", 'e' : "001", 'l' : "010", 'o': "100"}
-    # print(frequency_count("trial.txt"))
     dictio = compress("trial.txt")
     decompress("compressed.txt", dictio)
-    # print(compress("trial.txt") == decompress("compressed.txt"))
+    # print(compress("trial.txt") == decompress("compressed.txt", dictio))
