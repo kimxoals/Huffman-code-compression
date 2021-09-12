@@ -4,7 +4,7 @@ class Node:
         self.char = char
         self.left = left
         self.right = right
-        self.huff = ''
+        self.code = ''
 
 
 """
@@ -17,16 +17,16 @@ Else build new tree and merge to main tree.
 """
 
 
-def printNodes(node, val='', char_dict=None):
-    if char_dict is None:
-        char_dict = {}
-    newVal = val + str(node.huff)
+def traverse_tree(node, val='', encoding=None):
+    if encoding is None:
+        encoding = {}
+    newVal = val + str(node.code)
     if node.left:
-        printNodes(node.left, newVal, char_dict)
+        traverse_tree(node.left, newVal, encoding)
     if node.right:
-        printNodes(node.right, newVal, char_dict)
-    if not node.left and not node.right:
-        char_dict[node.char] = newVal
+        traverse_tree(node.right, newVal, encoding)
+    if not (node.left or node.right):
+        encoding[node.char] = newVal
 
 
 def huffman_encoding(chars, freq) -> dict:
@@ -43,8 +43,8 @@ def huffman_encoding(chars, freq) -> dict:
         left = nodes[0]
         right = nodes[1]
 
-        left.huff = 0
-        right.huff = 1
+        left.code = 0
+        right.code = 1
 
         # make new intermediate node
         newNode = Node(left.freq + right.freq, left.char + right.char, left,
@@ -57,9 +57,9 @@ def huffman_encoding(chars, freq) -> dict:
         # Add newNode
         nodes.append(newNode)
 
-    char_dict = {}
-    printNodes(nodes[0], char_dict=char_dict)
-    return char_dict
+    encoding = {}
+    traverse_tree(nodes[0], encoding=encoding)
+    return encoding
 
 
 def frequency_count(filename: str) -> list:
@@ -105,18 +105,18 @@ def compress(filename: str) -> list:
     text = file.read()
     compressed_file = open("output/compressed.txt", "wb")
     char_freq = frequency_count(filename)
-    prefix_dict = huffman_encoding(char_freq[0], char_freq[1])
+    encoding = huffman_encoding(char_freq[0], char_freq[1])
 
     for index in range(len(text)):
-        compressed_string += prefix_dict[text[index]]
+        compressed_string += encoding[text[index]]
 
     compressed_file.write(str_to_byte(compressed_string))
     file.close()
     compressed_file.close()
-    return [len(compressed_string), prefix_dict]
+    return [len(compressed_string), encoding]
 
 
-def decompress(compressed_file: str, len_n_prefix: list) -> str:
+def decompress(compressed_file: str, encoding: list) -> str:
     file = open(compressed_file, "rb")
     decompressed_file = open("output/decompressed.txt", "w")
     compressed_text = file.read()
@@ -124,19 +124,19 @@ def decompress(compressed_file: str, len_n_prefix: list) -> str:
     for integer in compressed_text:
         compressed_str += format(integer, '08b')
 
-    inv_prefix = {v: k for k, v in len_n_prefix[1].items()}
+    encoding_reversed = {val: key for key, val in encoding[1].items()}
     temp = ''
     text = ''
     i = 0
-    while i < len_n_prefix[0]:
-        if temp not in inv_prefix:
+    while i < encoding[0]:
+        if temp not in encoding_reversed:
             temp += compressed_str[i]
             i += 1
         else:
-            text += inv_prefix[temp]
+            text += encoding_reversed[temp]
             temp = ''
-    if temp in inv_prefix:
-        text += inv_prefix[temp]
+    if temp in encoding_reversed:
+        text += encoding_reversed[temp]
 
     decompressed_file.write(text)
     decompressed_file.close()
