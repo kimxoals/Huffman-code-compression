@@ -29,7 +29,8 @@ def traverse_tree(node, val='', encoding=None):
         encoding[node.char] = newVal
 
 
-def huffman_encoding(chars, freq) -> dict:
+def huffman_encoding(filename: str) -> dict:
+    chars, freq = frequency_count(filename)
     nodes = []
     # initialize array of leaves
     for i in range(len(chars)):
@@ -62,7 +63,7 @@ def huffman_encoding(chars, freq) -> dict:
     return encoding
 
 
-def frequency_count(filename: str) -> list:
+def frequency_count(filename: str) -> tuple:
     """Returns a list of two lists which are the list of characters and their
     corresponding frequencies in filename, sorted by their frequencies.
     """
@@ -70,7 +71,7 @@ def frequency_count(filename: str) -> list:
     text = file.read()
     char_dict = {}
     if text == '':
-        return [[], []]
+        return ([], [])
     for index in range(len(text)):
         if text[index] not in char_dict:
             char_dict[text[index]] = 1
@@ -84,7 +85,7 @@ def frequency_count(filename: str) -> list:
     for item in sorted_pair_list:
         freq_list.append(item[1])
         char_list.append(item[0])
-    return [char_list, freq_list]
+    return char_list, freq_list
 
 
 def str_to_byte(bit_str: str) -> bytes:
@@ -99,13 +100,11 @@ def str_to_byte(bit_str: str) -> bytes:
     return bytes(byte_array)
 
 
-def compress(filename: str) -> list:
+def compress(filename: str, encoding) -> int:
     file = open(filename, "r")
     compressed_string = ""
     text = file.read()
     compressed_file = open("output/compressed.txt", "wb")
-    char_freq = frequency_count(filename)
-    encoding = huffman_encoding(char_freq[0], char_freq[1])
 
     for index in range(len(text)):
         compressed_string += encoding[text[index]]
@@ -113,10 +112,10 @@ def compress(filename: str) -> list:
     compressed_file.write(str_to_byte(compressed_string))
     file.close()
     compressed_file.close()
-    return [len(compressed_string), encoding]
+    return len(compressed_string)
 
 
-def decompress(compressed_file: str, encoding: list) -> str:
+def decompress(compressed_file: str, encoding: dict, length: int) -> str:
     file = open(compressed_file, "rb")
     decompressed_file = open("output/decompressed.txt", "w")
     compressed_text = file.read()
@@ -124,11 +123,11 @@ def decompress(compressed_file: str, encoding: list) -> str:
     for integer in compressed_text:
         compressed_str += format(integer, '08b')
 
-    encoding_reversed = {val: key for key, val in encoding[1].items()}
+    encoding_reversed = {val: key for key, val in encoding.items()}
     temp = ''
     text = ''
     i = 0
-    while i < encoding[0]:
+    while i < length:
         if temp not in encoding_reversed:
             temp += compressed_str[i]
             i += 1
@@ -145,6 +144,7 @@ def decompress(compressed_file: str, encoding: list) -> str:
 
 
 if __name__ == "__main__":
-
-    dictio = compress("lorem.txt")
-    decompress("output/compressed.txt", dictio)
+    sample = "lorem.txt"
+    f_encoding = huffman_encoding(sample)
+    f_length = compress(sample, f_encoding)
+    decompress("output/compressed.txt", f_encoding, f_length)
