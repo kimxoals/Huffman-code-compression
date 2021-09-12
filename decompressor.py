@@ -1,4 +1,7 @@
-def decompress(compressed_file: str, len_n_prefix: list) -> str:
+import pickle
+
+
+def decompress(compressed_file: str, encoding: dict, length: int) -> str:
     file = open(compressed_file, "rb")
     decompressed_file = open("output/decompressed.txt", "w")
     compressed_text = file.read()
@@ -6,21 +9,32 @@ def decompress(compressed_file: str, len_n_prefix: list) -> str:
     for integer in compressed_text:
         compressed_str += format(integer, '08b')
 
-    inv_prefix = {v: k for k, v in len_n_prefix[1].items()}
+    encoding_reversed = {val: key for key, val in encoding.items()}
     temp = ''
     text = ''
     i = 0
-    while i < len_n_prefix[0]:
-        if temp not in inv_prefix:
+    while i < length:
+        if temp not in encoding_reversed:
             temp += compressed_str[i]
             i += 1
         else:
-            text += inv_prefix[temp]
+            text += encoding_reversed[temp]
             temp = ''
-    if temp in inv_prefix:
-        text += inv_prefix[temp]
+    if temp in encoding_reversed:
+        text += encoding_reversed[temp]
 
     decompressed_file.write(text)
     decompressed_file.close()
     file.close()
-    return "success"
+    return ""
+
+
+if __name__ == "__main__":
+
+    f_path = "output/compressed.txt"
+
+    with open('output/data.pkl', 'rb') as f:
+        f_length = pickle.load(f)
+        f_encoding = pickle.load(f)
+
+    decompress(f_path, f_encoding, f_length)

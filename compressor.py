@@ -1,3 +1,6 @@
+import pickle
+
+
 class Node:
     def __init__(self, freq, char=None, left=None, right=None):
         self.freq = freq
@@ -115,36 +118,11 @@ def compress(filename: str, encoding) -> int:
     return len(compressed_string)
 
 
-def decompress(compressed_file: str, encoding: dict, length: int) -> str:
-    file = open(compressed_file, "rb")
-    decompressed_file = open("output/decompressed.txt", "w")
-    compressed_text = file.read()
-    compressed_str = ''
-    for integer in compressed_text:
-        compressed_str += format(integer, '08b')
-
-    encoding_reversed = {val: key for key, val in encoding.items()}
-    temp = ''
-    text = ''
-    i = 0
-    while i < length:
-        if temp not in encoding_reversed:
-            temp += compressed_str[i]
-            i += 1
-        else:
-            text += encoding_reversed[temp]
-            temp = ''
-    if temp in encoding_reversed:
-        text += encoding_reversed[temp]
-
-    decompressed_file.write(text)
-    decompressed_file.close()
-    file.close()
-    return "success"
-
-
 if __name__ == "__main__":
     sample = "lorem.txt"
     f_encoding = huffman_encoding(sample)
     f_length = compress(sample, f_encoding)
-    decompress("output/compressed.txt", f_encoding, f_length)
+
+    with open('output/data.pkl', 'wb') as f:
+        pickle.dump(f_length, f)
+        pickle.dump(f_encoding, f)
