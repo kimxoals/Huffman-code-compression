@@ -1,6 +1,3 @@
-import pprint
-
-
 class Node:
     def __init__(self, freq, char=None, left=None, right=None):
         self.freq = freq
@@ -8,7 +5,6 @@ class Node:
         self.left = left
         self.right = right
         self.huff = ''
-
 
 
 """
@@ -31,7 +27,6 @@ def printNodes(node, val='', char_dict=None):
         printNodes(node.right, newVal, char_dict)
     if not node.left and not node.right:
         char_dict[node.char] = newVal
-        # print(repr(f"{node.char} -> {newVal}"))
 
 
 def huffman_encoding(chars, freq) -> dict:
@@ -62,10 +57,8 @@ def huffman_encoding(chars, freq) -> dict:
         # Add newNode
         nodes.append(newNode)
 
-        # print([(node.char, node.freq) for node in nodes])
     char_dict = {}
     printNodes(nodes[0], char_dict=char_dict)
-    # pprint.pprint(char_dict)
     return char_dict
 
 
@@ -103,7 +96,6 @@ def str_to_byte(bit_str: str) -> bytes:
         remainder = bit_str[q * 8:]
         remainder += '0' * (8 - r)
         byte_array.append(int(remainder, 2))
-    # print('original bytes: ', bytes(byte_array))
     return bytes(byte_array)
 
 
@@ -111,14 +103,13 @@ def compress(filename: str) -> list:
     file = open(filename, "r")
     compressed_string = ""
     text = file.read()
-    compressed_file = open("compressed.txt", "wb")
+    compressed_file = open("output/compressed.txt", "wb")
     char_freq = frequency_count(filename)
     prefix_dict = huffman_encoding(char_freq[0], char_freq[1])
 
     for index in range(len(text)):
         compressed_string += prefix_dict[text[index]]
 
-    # print('original binary: ', compressed_string)
     compressed_file.write(str_to_byte(compressed_string))
     file.close()
     compressed_file.close()
@@ -127,15 +118,12 @@ def compress(filename: str) -> list:
 
 def decompress(compressed_file: str, len_n_prefix: list) -> str:
     file = open(compressed_file, "rb")
-    decompressed_file = open("decompressed.txt", "w")
+    decompressed_file = open("output/decompressed.txt", "w")
     compressed_text = file.read()
-    # print('read bytes: ', compressed_text)
     compressed_str = ''
     for integer in compressed_text:
-        # print(format(integer, '08b'))
         compressed_str += format(integer, '08b')
 
-    # print('read binary: ', compressed_str)
     inv_prefix = {v: k for k, v in len_n_prefix[1].items()}
     temp = ''
     text = ''
@@ -156,9 +144,7 @@ def decompress(compressed_file: str, len_n_prefix: list) -> str:
     return "success"
 
 
-
 if __name__ == "__main__":
 
-    dictio = compress("trial.txt")
-    decompress("compressed.txt", dictio)
-    # print(compress("trial.txt") == decompress("compressed.txt", dictio))
+    dictio = compress("lorem.txt")
+    decompress("output/compressed.txt", dictio)
