@@ -1,7 +1,7 @@
 import pickle
 
 
-def decompress(compressed_file: str, encoding: dict, length: int) -> str:
+def decompress(compressed_file: str, encoding: dict, length: int) -> bool:
     file = open(compressed_file, "rb")
     decompressed_file = open("output/decompressed.txt", "w")
     compressed_text = file.read()
@@ -26,7 +26,7 @@ def decompress(compressed_file: str, encoding: dict, length: int) -> str:
     decompressed_file.write(text)
     decompressed_file.close()
     file.close()
-    return ""
+    return True
 
 
 if __name__ == "__main__":

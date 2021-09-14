@@ -1,5 +1,5 @@
 import pickle
-
+import os
 
 class Node:
     def __init__(self, freq, char=None, left=None, right=None):
@@ -107,7 +107,7 @@ def compress(filename: str, encoding) -> int:
     file = open(filename, "r")
     compressed_string = ""
     text = file.read()
-    compressed_file = open("output/compressed.txt", "wb")
+    compressed_file = open("output/" + filename.split(".")[0] + "_compressed.txt", "wb")
 
     for index in range(len(text)):
         compressed_string += encoding[text[index]]
@@ -115,14 +115,43 @@ def compress(filename: str, encoding) -> int:
     compressed_file.write(str_to_byte(compressed_string))
     file.close()
     compressed_file.close()
+    print("Compressed successfully")
     return len(compressed_string)
 
 
-if __name__ == "__main__":
-    sample = "lorem.txt"
-    f_encoding = huffman_encoding(sample)
-    f_length = compress(sample, f_encoding)
+def compare_sizes(original: str) -> str:
+    orig_size = os.path.getsize(original)
+    compressed_size = os.path.getsize("output/" + original.split(".")[0] + "_compressed.txt")
 
-    with open('output/data.pkl', 'wb') as f:
-        pickle.dump(f_length, f)
-        pickle.dump(f_encoding, f)
+    print("Size is compressed by " + "{:.1f}".format(((orig_size - compressed_size) * 100)/orig_size) + "%.")
+
+
+
+
+if __name__ == "__main__":
+
+    while 1:
+        try:
+            sample = input("What's the filename: ")
+            if sample == "quit":
+                print("Program terminated.")
+                quit()
+            f_encoding = huffman_encoding(sample)
+            f_length = compress(sample, f_encoding)
+            with open('output/data.pkl', 'wb') as f:
+                pickle.dump(f_length, f)
+                pickle.dump(f_encoding, f)
+
+            compare_sizes(sample)
+
+            quit()
+
+        except FileNotFoundError:
+            print("No such file.")
+
+
+
+
+
+
+
